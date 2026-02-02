@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: atlas-db
+    environment:
+      POSTGRES_USER: atlas
+      POSTGRES_PASSWORD: atlas_secure_password
+      POSTGRES_DB: atlas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atlas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    container_name: atlas-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://atlas:atlas_secure_password@db:5432/atlas
+      API_KEY: ${API_KEY:-dev-key}
+      MODEL_VERSION: ${MODEL_VERSION:-v0}
+      CORS_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    container_name: atlas-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile  # ✅ Cambiamos a producción
+      args:
+        BACKEND_URL: http://backend:8000
+        API_KEY: ${API_KEY:-dev-key}
+        TENANT_ID: ${TENANT_ID:-demo}
+    environment:
+      BACKEND_URL: http://backend:8000
+      API_KEY: ${API_KEY:-dev-key}
+      TENANT_ID: ${TENANT_ID:-demo}
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
+      NEXT_PUBLIC_API_KEY: ${API_KEY:-dev-key}
+      NEXT_PUBLIC_TENANT_ID: ${TENANT_ID:-demo}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

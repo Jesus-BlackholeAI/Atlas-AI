@@ -1,0 +1,139 @@
+
+    "cSpell.words": [
+Sistema de ingesta y scoring de eventos de negocio con modelo ML determinista.
+
+
+
+
+- Docker & Docker Compose
+- (Opcional) Node.js 20+ y Python 3.12+ para desarrollo local
+
+
+```bash
+   git clone <repo>
+   cd au
+   cp .env.example .env
+```
+
+
+```bash
+   docker compose up --build
+```
+
+   - Backend: http://localhost:8000/health
+   - Frontend: http://localhost:3000
+   - API Docs: http://localhost:8000/docs
+
+```bash
+curl -X POST http://localhost:8000/events \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: dev-key-change-in-production" \
+  -d '{
+    "tenant_id": "demo",
+    "source": "manual",
+    "type": "invoice_sent",
+    "timestamp": "2025-12-29T12:00:00Z",
+    "entities": {"customer": "ACME", "invoice": "F-001"},
+    "payload": {
+      "amount": 1200,
+      "days_overdue": 7,
+      "touches": 2,
+      "currency": "EUR"
+    },
+    "evidence_links": [],
+    "summary": "Factura F-001 enviada a ACME"
+  }'
+```
+
+
+- **Ingesta**: POST /events
+- **Listado**: GET /events?tenant_id=X
+- **Detalle**: GET /events/{id}?tenant_id=X
+- **Health**: GET /health
+
+1. **Feature Extraction** (`services/feature_extractor.py`)
+2. **Model Compute** (`services/model_engine.py`) ← 
+3. **Explanation** (audit trail)
+
+- **Dashboard**: Lista de eventos con scores
+- **Detalle**: Vista completa del evento + modelo
+- **Settings**: Configuración del sistema
+
+
+Edita `backend/app/services/model_engine.py`:
+```python
+def compute(features: Dict[str, Any]) -> Dict[str, Any]:
+    
+    
+    score = tu_funcion_scoring(features)
+    
+    return {
+        "model_version": MODEL_VERSION,
+        "score": score,
+        "confidence": tu_confidence,
+        "label": tu_clasificacion
+    }
+```
+
+
+- API Key en header `x-api-key`
+- Multi-tenant (por `tenant_id`)
+- CORS configurable
+
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `API_KEY` | Clave de API | `dev-key` |
+| `TENANT_ID` | ID del tenant | `demo` |
+| `MODEL_VERSION` | Versión del modelo | `v0` |
+| `DATABASE_URL` | PostgreSQL connection | (auto) |
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.api.main:app --reload
+```
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+
+```json
+{
+  "id": "uuid",
+  "tenant_id": "demo",
+  "source": "manual",
+  "type": "invoice_sent",
+  "timestamp": "2025-12-29T12:00:00Z",
+  "entities": {...},
+  "payload": {...},
+  "features": {...},
+  "model_output": {
+    "score": 0.65,
+    "confidence": 0.75,
+    "label": "medium",
+    "model_version": "v0"
+  }
+}
+```
+
+[Your license here]
+
+{
+  "source": "manual",
+  "type": "business",
+  "timestamp": "2026-01-21T22:40:00Z",
+  "summary": "Empresa de servicios con 50 empleados en fase de crecimiento acelerado. Riesgo de sobrecarga operativa y oportunidad de optimización de procesos.",
+  "payload": {
+    "company_size": 50,
+    "sector": "servicios profesionales",
+    "growth_rate": "alto",
+    "issues": ["sobrecarga de equipo", "falta de visibilidad operativa"],
+    "opportunities": ["automatización", "optimización de procesos", "mejora de rentabilidad"]
+  }
+}

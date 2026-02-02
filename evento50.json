@@ -1,0 +1,14 @@
+{
+  "tenant_id": "demo",
+  "source": "manual",
+  "type": "business",
+  "timestamp": "2026-01-21T22:40:00Z",
+  "summary": "Empresa de servicios con 50 empleados en crecimiento acelerado. Riesgo de sobrecarga operativa y oportunidad de optimizacion de procesos.",
+  "payload": {
+    "company_size": 50,
+    "sector": "servicios profesionales",
+    "growth_rate": "alto",
+    "issues": ["sobrecarga de equipo","falta de visibilidad operativa"],
+    "opportunities": ["automatizacion","optimizacion de procesos","mejora de rentabilidad"]
+  }
+}

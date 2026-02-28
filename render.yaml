@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: atlas-ai-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ATLAS_BOOTSTRAP_ORG_NAME
+        sync: false
+      - key: ATLAS_BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: ATLAS_BOOTSTRAP_ADMIN_PASSWORD
+        sync: false

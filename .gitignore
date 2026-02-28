@@ -1,0 +1,30 @@
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+.pnp.*
+
+# Docker
+*.log
+
+# IDE / herramientas locales
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android / Capacitor build artifacts
+web/android/.gradle/
+web/android/app/build/
+web/android/build/
+*.apk
+*.aab

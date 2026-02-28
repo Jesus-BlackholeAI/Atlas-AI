@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Atlas AI</string>
+    <string name="title_activity_main">Atlas AI</string>
+    <string name="package_name">com.blackholeai.atlasai</string>
+    <string name="custom_url_scheme">com.blackholeai.atlasai</string>
+</resources>

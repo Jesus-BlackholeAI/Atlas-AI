@@ -239,7 +239,8 @@ def analytics_top_terms(
     from collections import Counter
 
     c = Counter()
-    for (text,) in rows:
+    for row in rows:
+        text = row if isinstance(row, str) else (row[0] if row else "")
         for t in _tokenize(text or ""):
             c[t] += 1
     return [{"term": k, "count": int(v)} for k, v in c.most_common(limit)]

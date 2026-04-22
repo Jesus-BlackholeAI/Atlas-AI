@@ -28,3 +28,5 @@ web/android/app/build/
 web/android/build/
 *.apk
 *.aab
+*.keystore
+web/android/keystore.properties

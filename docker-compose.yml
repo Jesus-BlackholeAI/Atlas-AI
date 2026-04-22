@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: atlas
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -15,13 +16,14 @@ services:
 
   api:
     build: ./api
+    restart: unless-stopped
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      ATLAS_BOOTSTRAP_ORG_NAME: ${ATLAS_BOOTSTRAP_ORG_NAME}
-      ATLAS_BOOTSTRAP_ADMIN_EMAIL: ${ATLAS_BOOTSTRAP_ADMIN_EMAIL}
-      ATLAS_BOOTSTRAP_ADMIN_PASSWORD: ${ATLAS_BOOTSTRAP_ADMIN_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGINS: ${CORS_ORIGINS}
+      ATLAS_BOOTSTRAP_ORG_NAME: ${ATLAS_BOOTSTRAP_ORG_NAME:-}
+      ATLAS_BOOTSTRAP_ADMIN_EMAIL: ${ATLAS_BOOTSTRAP_ADMIN_EMAIL:-}
+      ATLAS_BOOTSTRAP_ADMIN_PASSWORD: ${ATLAS_BOOTSTRAP_ADMIN_PASSWORD:-}
     ports:
       - "8000:8000"
     volumes:
@@ -31,11 +33,14 @@ services:
         condition: service_healthy
 
   web:
-    build: ./web
-    environment:
-      VITE_API_BASE: ${VITE_API_BASE}
+    build:
+      context: ./web
+      args:
+        # La URL que el NAVEGADOR usará para llamar a la API
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8000}
+    restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "80:80"
     depends_on:
       - api
 

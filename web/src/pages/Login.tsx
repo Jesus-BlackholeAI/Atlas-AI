@@ -28,7 +28,8 @@ export default function Login() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setError(data?.detail || JSON.stringify(data))
+        const detail = data?.detail
+        setError(typeof detail === 'string' ? detail : Array.isArray(detail) ? detail.map((e: any) => e.msg ?? JSON.stringify(e)).join(', ') : JSON.stringify(data))
         return
       }
       if (data?.access_token) {
